@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lịch sử kiểm tra - Test 1-6</title>
+    <title>Lịch sử kiểm tra - Test Từ vựng 1-6</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
@@ -35,7 +35,7 @@
         .search-section {
             margin-bottom: 30px;
             min-height: 60px;
-            display: flex !important;
+            display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
@@ -139,7 +139,7 @@
             }
             .search-section {
                 padding: 10px;
-                display: flex !important;
+                display: flex;
             }
             .search-section label {
                 font-size: 14px;
@@ -153,7 +153,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Lịch sử kiểm tra - Test 1-6</h1>
+        <h1>Lịch sử kiểm tra - Test Từ vựng 1-6</h1>
     </div>
 
     <div class="search-section">
@@ -175,8 +175,6 @@
                     <th>問題 II</th>
                     <th>問題 III</th>
                     <th>問題 IV</th>
-                    <th>問題 V</th>
-                    <th>問題 VI</th>
                     <th>Tổng</th>
                     <th>Tỷ lệ</th>
                     <th>Xếp loại</th>
@@ -192,12 +190,10 @@
     </footer>
 
     <script type="module">
-        // Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
         import { getFirestore, collection, getDocs, deleteDoc, doc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAfy4QMD9_7PyFHpInNdKDRWuW4AYCtLJ4",
             authDomain: "history-e4633.firebaseapp.com",
@@ -208,7 +204,6 @@
             measurementId: "G-DC055090BW"
         };
 
-        // Initialize Firebase
         let app, analytics, db;
         try {
             app = initializeApp(firebaseConfig);
@@ -222,14 +217,11 @@
             document.getElementById('message').textContent = 'Không thể kết nối với cơ sở dữ liệu. Vui lòng kiểm tra cấu hình hoặc kết nối mạng.';
         }
 
-        // Define Firestore functions
         const sectionPoints = {
-            1: 15,
-            2: 15,
-            3: 15,
-            4: 15,
-            5: 30,
-            6: 10
+            1: 20, // 問題Ⅰ: 10 câu x 2 điểm
+            2: 20, // 問題Ⅱ: 10 câu x 2 điểm
+            3: 40, // 問題Ⅲ: 10 câu x 4 điểm
+            4: 20  // 問題Ⅳ: 5 câu x 4 điểm
         };
 
         function normalizeString(str) {
@@ -242,10 +234,10 @@
         }
 
         function getEvaluation(percentage) {
-            if (percentage >= 85) return 'A';
-            if (percentage >= 70) return 'B';
-            if (percentage >= 60) return 'C';
-            if (percentage >= 55) return 'D';
+            if (percentage >= 80) return 'A';
+            if (percentage >= 60) return 'B';
+            if (percentage >= 40) return 'C';
+            if (percentage >= 20) return 'D';
             return 'F';
         }
 
@@ -253,7 +245,7 @@
             const historyTableBody = document.getElementById('history-table-body');
             const messageDiv = document.getElementById('message');
             let testHistory = [];
-            const collectionName = 'testHistory1-6'; // Chỉ lấy dữ liệu từ testHistory1-6
+            const collectionName = 'testHistorytuvung1-6';
 
             if (!db) {
                 messageDiv.textContent = 'Không thể kết nối với cơ sở dữ liệu. Vui lòng kiểm tra cấu hình Firebase.';
@@ -261,7 +253,6 @@
             }
 
             try {
-                // Fetch data from testHistory1-6
                 const snapshot = await getDocs(collection(db, collectionName));
                 testHistory = snapshot.docs.map(doc => ({
                     id: doc.id,
@@ -269,7 +260,6 @@
                     ...doc.data()
                 }));
 
-                // Filter valid data before sorting
                 testHistory = testHistory.filter(entry => {
                     if (!entry.timestamp || typeof entry.timestamp.toDate !== 'function') {
                         console.warn(`Dữ liệu không hợp lệ trong collection ${entry.collection}, id ${entry.id}: Thiếu hoặc sai định dạng timestamp`);
@@ -278,10 +268,8 @@
                     return true;
                 });
 
-                // Sort by timestamp (newest first)
                 testHistory.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
-                // Filter by search term
                 if (searchTerm) {
                     const normalizedSearch = normalizeString(searchTerm);
                     testHistory = testHistory.filter(entry =>
@@ -291,7 +279,6 @@
                     );
                 }
 
-                // Clear table content before rendering
                 historyTableBody.innerHTML = '';
                 testHistory.forEach(entry => {
                     const evaluation = getEvaluation(entry.percentage || 0);
@@ -307,8 +294,6 @@
                             <td>${entry.section2 || 0}/${sectionPoints[2]}</td>
                             <td>${entry.section3 || 0}/${sectionPoints[3]}</td>
                             <td>${entry.section4 || 0}/${sectionPoints[4]}</td>
-                            <td>${entry.section5 || 0}/${sectionPoints[5]}</td>
-                            <td>${entry.section6 || 0}/${sectionPoints[6]}</td>
                             <td>${entry.totalScore || 0}/100</td>
                             <td>${Math.round(entry.percentage || 0)}%</td>
                             <td class="${rankClass}">${evaluation}</td>
@@ -319,7 +304,7 @@
                 });
 
                 if (testHistory.length === 0) {
-                    historyTableBody.innerHTML = '<tr><td colspan="15">Không có dữ liệu lịch sử hoặc không thể truy xuất dữ liệu.</td></tr>';
+                    historyTableBody.innerHTML = '<tr><td colspan="13">Không có dữ liệu lịch sử hoặc không thể truy xuất dữ liệu.</td></tr>';
                 }
 
                 messageDiv.textContent = '';
@@ -372,7 +357,6 @@
                 });
             }
 
-            // Event delegation for delete buttons
             const historyTableBody = document.getElementById('history-table-body');
             historyTableBody.addEventListener('click', (e) => {
                 if (e.target.classList.contains('delete-btn')) {
